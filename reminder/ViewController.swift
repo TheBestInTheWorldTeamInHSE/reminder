@@ -26,9 +26,10 @@ extension UIView {
 
 class ViewController: UIViewController {
     
+    @IBOutlet weak var label: UILabel!
     @IBOutlet weak var button: UIButton!
     
-    var counter = 0
+    var counter = 0.0
     var timer = Timer()
 
     override func viewDidLoad() {
@@ -41,6 +42,38 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var textField: UITextField!
     
+    @IBAction func button(_ sender: UIButton) {
+        
+        timer.invalidate() // just in case this button is tapped multiple times
+
+        // start the timer
+        timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(timerAction), userInfo: nil, repeats: true)
+        
+        if let time = Double(textField.text!) {
+            counter = time
+            print(time)
+            sendNotification(on: time)
+        } else {
+            // User entered nothing.
+        }
+        
+    }
+    
+    // stop timer
+    @IBAction func cancelTimerButtonTapped(sender: UIButton) {
+        timer.invalidate()
+    }
+
+    // called every time interval from the timer
+    @objc func timerAction() {
+        counter -= 0.1
+        label.text = NSString(format: "%.1f", counter) as String
+        
+        if counter < 0 {
+            timer.invalidate()
+            label.text = "0"
+        }
+    }
     
     private func sendNotification(on time: Double) {
         let center = UNUserNotificationCenter.current()
@@ -65,16 +98,6 @@ class ViewController: UIViewController {
         center.add(request) { (error) in
             // Check the error
         }
-    }
-    
-    @IBAction func button(_ sender: UIButton) {
-        if let time = Double(textField.text!) {
-            print(time)
-            sendNotification(on: time)
-        } else {
-            // User entered nothing.
-        }
-        
     }
     
     
