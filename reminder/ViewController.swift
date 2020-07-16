@@ -10,16 +10,9 @@ import UIKit
 import UserNotifications
 
 extension UIView {
-    
     public var height: CGFloat {
         get {
             return self.frame.size.height
-        }
-    }
-
-    public var width: CGFloat {
-        get {
-            return self.frame.size.width
         }
     }
 }
@@ -32,7 +25,6 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
         
         button.layer.cornerRadius = button.height / 2
         
@@ -41,27 +33,27 @@ class ViewController: UIViewController {
     }
     
     func createDatePicker() {
-        let toolbar = UIToolbar()
-        toolbar.sizeToFit()
-        
-        let doneBtn = UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: #selector(donePressed))
-        toolbar.setItems([doneBtn], animated: true)
-        
-        textField.inputAccessoryView = toolbar
         textField.inputView = datePicker
         
         datePicker.datePickerMode = .dateAndTime
+        
+        datePicker.addTarget(self, action: #selector(dateChanged), for: .valueChanged)
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapGestureDone))
+        self.view.addGestureRecognizer(tapGesture)
     }
     
-    @objc func donePressed() {
-        
+    @objc func dateChanged() {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
         formatter.timeStyle = .short
         
         textField.text = formatter.string(from: datePicker.date)
         textField.textAlignment = .center
-        self.view.endEditing(true)
+    }
+    
+    @objc func tapGestureDone() {
+        view.endEditing(true)
     }
     
     @IBOutlet weak var textField: UITextField!
@@ -85,6 +77,7 @@ class ViewController: UIViewController {
         let content = UNMutableNotificationContent()
         content.title = "Notification"
         content.body = "Text"
+        content.badge = 12
         
         let date = Date().addingTimeInterval(time)
         
