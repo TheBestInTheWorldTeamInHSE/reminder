@@ -70,7 +70,7 @@ class ViewController: UIViewController {
     private func sendNotification(on time: Double) {
         let center = UNUserNotificationCenter.current()
         
-        center.requestAuthorization(options: [.alert, .sound]) { (granted, error) in
+        center.requestAuthorization(options: [.badge, .alert, .sound]) { (granted, error) in
             
         }
         
