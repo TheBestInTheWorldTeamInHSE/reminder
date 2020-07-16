@@ -26,11 +26,9 @@ extension UIView {
 
 class ViewController: UIViewController {
     
-    @IBOutlet weak var label: UILabel!
     @IBOutlet weak var button: UIButton!
     
-    var counter = 0.0
-    var timer = Timer()
+    let datePicker = UIDatePicker()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,41 +36,43 @@ class ViewController: UIViewController {
         
         button.layer.cornerRadius = button.height / 2
         
+        createDatePicker()
+        
+    }
+    
+    func createDatePicker() {
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        
+        let doneBtn = UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: #selector(donePressed))
+        toolbar.setItems([doneBtn], animated: true)
+        
+        textField.inputAccessoryView = toolbar
+        textField.inputView = datePicker
+        
+        datePicker.datePickerMode = .dateAndTime
+    }
+    
+    @objc func donePressed() {
+        
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .short
+        
+        textField.text = formatter.string(from: datePicker.date)
+        textField.textAlignment = .center
+        self.view.endEditing(true)
     }
     
     @IBOutlet weak var textField: UITextField!
     
     @IBAction func button(_ sender: UIButton) {
         
-        timer.invalidate() // just in case this button is tapped multiple times
-
-        // start the timer
-        timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(timerAction), userInfo: nil, repeats: true)
+        let time = datePicker.date.timeIntervalSinceNow
+        print(time)
         
-        if let time = Double(textField.text!) {
-            counter = time
-            print(time)
-            sendNotification(on: time)
-        } else {
-            // User entered nothing.
-        }
+        sendNotification(on: time)
         
-    }
-    
-    // stop timer
-    @IBAction func cancelTimerButtonTapped(sender: UIButton) {
-        timer.invalidate()
-    }
-
-    // called every time interval from the timer
-    @objc func timerAction() {
-        counter -= 0.1
-        label.text = NSString(format: "%.1f", counter) as String
-        
-        if counter < 0 {
-            timer.invalidate()
-            label.text = "0"
-        }
     }
     
     private func sendNotification(on time: Double) {
