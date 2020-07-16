@@ -59,35 +59,28 @@ class ViewController: UIViewController {
     @IBOutlet weak var textField: UITextField!
     
     @IBAction func button(_ sender: UIButton) {
-        
-        let time = datePicker.date.timeIntervalSinceNow
-        print(time)
-        
-        sendNotification(on: time)
-        
+        sendNotification()
     }
     
-    private func sendNotification(on time: Double) {
+    private func sendNotification() {
         let center = UNUserNotificationCenter.current()
-        
+
         center.requestAuthorization(options: [.badge, .alert, .sound]) { (granted, error) in
-            
+
         }
-        
+
         let content = UNMutableNotificationContent()
         content.title = "Notification"
         content.body = "Text"
         content.badge = 12
         
-        let date = Date().addingTimeInterval(time)
-        
-        let dateComp = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: date)
-        
-        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComp, repeats: false)
-        
+        let date = datePicker.calendar.dateComponents([.day, .hour, .minute], from: datePicker.date)
+
+        let trigger = UNCalendarNotificationTrigger(dateMatching: date, repeats: false)
+
         let uuidString = UUID().uuidString
         let request = UNNotificationRequest(identifier: uuidString, content: content, trigger: trigger)
-        
+
         center.add(request) { (error) in
             // Check the error
         }
